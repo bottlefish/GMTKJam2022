@@ -84,4 +84,13 @@ public class EnemyAiTutorial : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
     }
+
+    private void OnCollisionEnter(Collision other) {
+        if(other.transform.tag=="Player")
+        {
+            Destroy(this.gameObject);
+            other.transform.GetComponent<PlayerHealth>().UpdateHealth();
+
+        }
+    }
 }

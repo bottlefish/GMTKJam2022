@@ -88,6 +88,7 @@ public class GunController : MonoBehaviour
             // 骰子进入弹匣并销毁骰子
             diceQueue.Enqueue(colliderDice.State);
             colliderDice.haveDiced=false;
+            colliderDice.canDestoryEnemy=true;
             colliderDice.DestroySelf();
         }
     }

@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
 	}
 
 	private IEnumerator transitionScene(float duration){
-		transition.SetTrigger("FadeOut");
+		//transition.SetTrigger("FadeOut");
 		float elapsed = 0;
 		while (elapsed < duration){
 			elapsed += Time.deltaTime;

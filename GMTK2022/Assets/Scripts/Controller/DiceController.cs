@@ -11,6 +11,10 @@ public class DiceController : MonoBehaviour
     public float ForceAmount = 10000f;
     public float TorqueAmount = 20f;
 
+
+    public bool canDestoryEnemy=true;
+
+
     /*public enum State{
         one,
         two,
@@ -124,7 +128,7 @@ public class DiceController : MonoBehaviour
 
     void DoDiceRoll()
     {
-        haveDiced=true;
+                haveDiced=true;
                 transform.GetComponent<Rigidbody>().freezeRotation = false;
                 //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
                 Vector3 tempPos=transform.position;
@@ -139,7 +143,7 @@ public class DiceController : MonoBehaviour
                 transform.DOMove(target,0.4f);
                 transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace();
                 transform.GetComponent<Rigidbody>().freezeRotation = true; });
-                transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
+                //transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
                 //transform.GetComponent<Rigidbody>().AddForce(new Vector3(0,1,0)*ForceAmount);
 
                 transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
@@ -149,6 +153,7 @@ public class DiceController : MonoBehaviour
                         {
                             
                             transform.GetComponent<Rigidbody>().isKinematic = true;
+                            canDestoryEnemy=!canDestoryEnemy;
                         });
                     }
                 );
@@ -157,9 +162,16 @@ public class DiceController : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        
         if (other.transform.tag == "Enemy")
         {
-            Destroy(other.gameObject);
+            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
+            if(canDestoryEnemy)
+            {
+                 Destroy(other.gameObject);
+
+            }
+           
 
             if(!haveDiced)
             {
@@ -168,6 +180,8 @@ public class DiceController : MonoBehaviour
         }
         if(other.transform.tag=="Wall")
         {
+            
+            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
             if(!haveDiced)
             {
                 haveDiced=true;
@@ -183,6 +197,7 @@ public class DiceController : MonoBehaviour
                         {
                             
                             transform.GetComponent<Rigidbody>().isKinematic = true;
+                            canDestoryEnemy=!canDestoryEnemy;
                         });
                     }
                 );
@@ -190,6 +205,8 @@ public class DiceController : MonoBehaviour
         }
         if(other.transform.tag=="Dice")
         {
+     
+            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
             if(!haveDiced)
             {
                 DoDiceRoll();
