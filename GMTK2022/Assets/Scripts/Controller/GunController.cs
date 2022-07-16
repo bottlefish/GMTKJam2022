@@ -15,6 +15,8 @@ public class GunController : MonoBehaviour
     private Queue<int> diceQueue;
 
     public Transform firePoint;
+
+  
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +48,7 @@ public class GunController : MonoBehaviour
             {
                 // 手上有骰子，发射并从骰子弹匣出栈
                 ShootDice(diceQueue.Dequeue());
+                //添加没有骰子的反馈
             }
         }
     }
@@ -84,6 +87,7 @@ public class GunController : MonoBehaviour
         {
             // 骰子进入弹匣并销毁骰子
             diceQueue.Enqueue(colliderDice.State);
+            colliderDice.haveDiced=false;
             colliderDice.DestroySelf();
         }
     }

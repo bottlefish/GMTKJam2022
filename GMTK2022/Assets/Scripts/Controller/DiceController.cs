@@ -31,6 +31,7 @@ public class DiceController : MonoBehaviour
             return state;
         }
     }
+      public bool haveDiced=false;
 
     //
     void Start()
@@ -121,27 +122,81 @@ public class DiceController : MonoBehaviour
         SetDiceFace();
     }
 
+    void DoDiceRoll()
+    {
+        haveDiced=true;
+                transform.GetComponent<Rigidbody>().freezeRotation = false;
+                //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
+                Vector3 tempPos=transform.position;
+
+                //transform.DOMove(new Vector3(Random.Range(-2f, 2f)+tempPos.x,tempPos.y,tempPos.z+Random.Range(-2f, 2f)),0.6f);
+                
+                //transform.DOLocalMoveX(tempPos.x + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
+                //transform.DOLocalMoveZ(tempPos.z + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
+
+                Vector3 offset=Random.insideUnitCircle*3;
+                Vector3 target=transform.position+offset;
+                transform.DOMove(target,0.4f);
+                transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace();
+                transform.GetComponent<Rigidbody>().freezeRotation = true; });
+                transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
+                //transform.GetComponent<Rigidbody>().AddForce(new Vector3(0,1,0)*ForceAmount);
+
+                transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
+                    {
+                        
+                        transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+                        {
+                            
+                            transform.GetComponent<Rigidbody>().isKinematic = true;
+                        });
+                    }
+                );
+
+    }
+
     private void OnCollisionEnter(Collision other)
     {
         if (other.transform.tag == "Enemy")
         {
             Destroy(other.gameObject);
-            transform.GetComponent<Rigidbody>().freezeRotation = false;
-            //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
-            transform.DOLocalRotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace(); });
-            //transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
-            //transform.GetComponent<Rigidbody>().AddForce(new Vector3(0,1,0)*ForceAmount);
-            transform.DOLocalMoveX(transform.position.x + Random.Range(-2f, 2f), 0.8f).SetEase(Ease.OutBack);
-            transform.DOLocalMoveZ(transform.position.z + Random.Range(-2f, 2f), 0.8f).SetEase(Ease.OutBack);
-            transform.DOLocalMoveY(5, 0.8f).SetEase(Ease.OutBack).OnComplete(() =>
-                {
-                    transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+
+            if(!haveDiced)
+            {
+                DoDiceRoll();
+            }
+        }
+        if(other.transform.tag=="Wall")
+        {
+            if(!haveDiced)
+            {
+                haveDiced=true;
+                Vector3 tempPos=transform.position;
+                transform.GetComponent<Rigidbody>().freezeRotation = false;
+                transform.DOLocalMove(other.transform.forward*2+tempPos,0.5f);
+                transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace(); 
+                transform.GetComponent<Rigidbody>().freezeRotation = true;});
+                transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
                     {
-                        transform.GetComponent<Rigidbody>().freezeRotation = true;
-                        transform.GetComponent<Rigidbody>().isKinematic = true;
-                    });
-                }
-            );
+                        
+                        transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+                        {
+                            
+                            transform.GetComponent<Rigidbody>().isKinematic = true;
+                        });
+                    }
+                );
+            }
+        }
+        if(other.transform.tag=="Dice")
+        {
+            if(!haveDiced)
+            {
+                DoDiceRoll();
+            }
+            other.transform.GetComponent<Rigidbody>().isKinematic=false;
+            other.transform.GetComponent<Rigidbody>().AddForce((other.transform.position-transform.position).normalized*8f,ForceMode.Impulse);
+            //transform.DOMove(transform.position,1f).OnComplete(() => { other.transform.GetComponent<Rigidbody>().isKinematic=true;});       
         }
     }
 
