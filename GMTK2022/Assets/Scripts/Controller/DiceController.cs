@@ -125,7 +125,7 @@ public class DiceController : MonoBehaviour
             transform.DOLocalMoveY(5,0.8f).SetEase(Ease.OutBack).OnComplete(()=>{
             transform.DOLocalMoveY(0,0.3f).SetEase(Ease.OutBack).OnComplete(()=>{              
                 transform.GetComponent<Rigidbody>().freezeRotation=true;
-                transform.GetComponent<Rigidbody>().isKinematic=true;            
+                //transform.GetComponent<Rigidbody>().isKinematic=true;            
                     });}
             );
                   

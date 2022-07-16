@@ -24,11 +24,9 @@ public class GunController : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             DiceController newDice=Instantiate(dice,firePoint.position,Quaternion.identity) as DiceController;
-                newDice.GetComponent<Rigidbody>().AddForce(transform.forward*ForceAmount,ForceMode.Impulse);
                 newDice.GetComponent<Rigidbody>().freezeRotation=true;
+                newDice.GetComponent<Rigidbody>().AddForce(transform.forward*ForceAmount,ForceMode.Impulse);
+                
         }
-
-
-
     }
 }
