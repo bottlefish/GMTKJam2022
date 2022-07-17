@@ -45,6 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 6835167578456727239, guid: bea82e90ee01bb7439491c72b8b94b08, type: 3}
-  timer: 3
-  numInWave: 4
+  timer: 4
+  numInWave: 3
   spawnRange: 3

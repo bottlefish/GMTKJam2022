@@ -8,6 +8,8 @@ public class DiceController : MonoBehaviour
     public float ForceAmount = 10000f;
     public float TorqueAmount = 20f;
 
+    public float randomRadius=6f;
+
 
     public bool canDestoryEnemy=true;
 
@@ -122,6 +124,11 @@ public class DiceController : MonoBehaviour
         state = Random.Range(1, 7);
         SetDiceFace();
     }
+private Vector3 RandomPointOnCircleEdge(float radius)
+{
+var vector2 = Random.insideUnitCircle.normalized * radius;
+return new Vector3(vector2.x, 0, vector2.y);
+}
 
     void DoDiceRoll()
     {
@@ -135,8 +142,7 @@ public class DiceController : MonoBehaviour
                 //transform.DOLocalMoveX(tempPos.x + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
                 //transform.DOLocalMoveZ(tempPos.z + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
 
-                Vector3 offset=Random.insideUnitCircle*3;
-                Vector3 target=transform.position+offset;
+                Vector3 target=RandomPointOnCircleEdge(10)+transform.position;
                 transform.DOMove(target,0.4f);
                 transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace();
                 transform.GetComponent<Rigidbody>().freezeRotation = true; });
