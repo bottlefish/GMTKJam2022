@@ -189,6 +189,7 @@ return new Vector3(vector2.x, 0, vector2.y);
                             
                             transform.GetComponent<Rigidbody>().isKinematic = true;
                             canDestoryEnemy=!canDestoryEnemy;
+                            ScoreManager.Instance.CheckDiceInScene();
                         });
                     }
                 );
