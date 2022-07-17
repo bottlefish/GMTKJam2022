@@ -19,11 +19,15 @@ public class ScoreManager : Singleton<ScoreManager>
     private static Vector3[] slotPosition = SlotPosition();
 
     public Transform slotInitPos;
+
+    public AudioClip[] winSound;
   
 
     /// <summary>
     /// 计分器清零
     /// </summary>
+
+    
     public void InitScoreManager()
     {
         totalScore = 0;

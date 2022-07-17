@@ -22,6 +22,8 @@ public class GunController : MonoBehaviour
     public AudioClip[] shootShound;
     public VisualEffect gundust;
 
+    public AudioClip[] pickSound;
+
   
     // Start is called before the first frame update
     void Start()
@@ -62,6 +64,7 @@ public class GunController : MonoBehaviour
 
     private void ShootDice(int diceState)
     {
+        CameraShake.Shake(0.1f,0.4f);
         Instantiate(gundust,firePoint.position,Quaternion.identity);
         gundust.Play();
         AudioManager.Instance.playsound(shootShound[Random.Range(0,shootShound.Length)]);
@@ -94,7 +97,8 @@ public class GunController : MonoBehaviour
             return;
         }
         else
-        {
+        {   
+            AudioManager.Instance.Diceplaysound(pickSound[Random.Range(0,pickSound.Length)]);
             // 骰子进入弹匣并销毁骰子
             diceQueue.Enqueue(colliderDice.State);
             colliderDice.haveDiced=false;

@@ -8,10 +8,13 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance;
 
 	public AudioSource soundSource;
+    public AudioSource soundSource2;
 
     public AudioSource dicesoundSource;
     public AudioSource dicesoundSource2;
     public AudioSource musicSource;
+
+    public AudioSource winSound;
 
 	void Awake(){
 		if (Instance == null){
@@ -29,8 +32,14 @@ public class AudioManager : MonoBehaviour
     }
      public void playsound(AudioClip sound)
     {
-        musicSource.clip=sound;
-        musicSource.Play();  
+        soundSource.clip=sound;
+        soundSource.Play();  
+
+    }
+     public void playsound2(AudioClip sound)
+    {
+        soundSource2.clip=sound;
+        soundSource2.Play();  
 
     }
      public void Diceplaysound(AudioClip sound)
@@ -43,6 +52,12 @@ public class AudioManager : MonoBehaviour
     {
         dicesoundSource2.clip=sound;
         dicesoundSource2.Play();  
+
+    }
+    public void playwin(AudioClip sound)
+    {
+        winSound.clip=sound;
+        winSound.Play();  
 
     }
 

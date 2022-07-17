@@ -352,7 +352,7 @@ public class DiceController : MonoBehaviour
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
             Time.timeScale=0;
-            StartCoroutine(DelayRecycle(2f));
+            StartCoroutine(DelayRecycle(1f));
         });
     }
     private IEnumerator DelayRecycle(float duration)

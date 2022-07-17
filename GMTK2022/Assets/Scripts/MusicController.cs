@@ -11,6 +11,8 @@ public class MusicController : MonoBehaviour
     public AudioClip[] clips;
 
     public PlayerHealth hp;
+
+    public AudioClip endclip;
     void Start()
     {
         au.loop=false;
@@ -18,6 +20,15 @@ public class MusicController : MonoBehaviour
     }
 
     // Update is called once per frame
+    public void PlayEnd()
+    {
+        au.clip=endclip;
+        au.Play();
+        au.loop=false;
+        reminder.Stop();
+
+        
+    }
     void Update()
     {
         if(hp.health!=0)
@@ -29,7 +40,7 @@ public class MusicController : MonoBehaviour
             reminder.volume=1;
         }
         
-        
+    
         
     }
     IEnumerator MainLoop()
