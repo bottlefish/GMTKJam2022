@@ -62,17 +62,19 @@ public class GameManager : MonoBehaviour
 
 public void ShowSuccess(int type)
 {
-	StartCoroutine(ShowType(type));
+	//StartCoroutine(ShowType(type));
 
 }
 public IEnumerator ShowType(int type){
 		//transition.SetTrigger("FadeOut");
 		successType[type].SetActive(true);
+		Time.timeScale=0;
 		float elapsed = 0;
-		while (elapsed < 1.2f){
-			elapsed += Time.deltaTime;
+		while (elapsed < 0.8f){
+			elapsed += Time.unscaledDeltaTime;
 			yield return null;
 		}
+		Time.timeScale=1;
 		successType[type].SetActive(false);
 		
 	}

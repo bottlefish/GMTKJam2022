@@ -31,4 +31,8 @@ public class Scorekeeper : MonoBehaviour {
 	public int FetchScore(){
 		return score;
 	}
+	private void Update() {
+		Debug.Log("score"+score);
+		
+	}
 }

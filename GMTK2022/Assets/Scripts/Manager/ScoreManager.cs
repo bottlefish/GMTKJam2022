@@ -70,8 +70,21 @@ public class ScoreManager : Singleton<ScoreManager>
         // 规则类型
         string ruleType = checkResult.GetRuleType();
 
+        if(ruleType=="StraightDraw")
+        {
+            AudioManager.Instance.playwin(winSound[0]);
+
+        }
+        if(ruleType=="FlushDraw")
+        {
+            AudioManager.Instance.playwin(winSound[1]);
+
+        }
+
+
         // 计算总分
         totalScore += checkResult.GetScore();
+        Scorekeeper.Instance.UpdateScore(checkResult.GetScore());
         // 回收骰子
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GunController gun = player.GetComponent<GunController>();

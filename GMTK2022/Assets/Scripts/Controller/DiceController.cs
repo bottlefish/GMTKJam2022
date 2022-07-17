@@ -351,7 +351,7 @@ public class DiceController : MonoBehaviour
         transform.DOMove(position, 0.4f).OnComplete(() =>
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
-            Time.timeScale=0;
+            //Time.timeScale=0;
             StartCoroutine(DelayRecycle(1f));
         });
     }
@@ -365,7 +365,7 @@ public class DiceController : MonoBehaviour
 			elapsed += Time.unscaledDeltaTime;
 			yield return null;
 		}
-         Time.timeScale=1;
+         //Time.timeScale=1;
 		gun.RecycleDice(this);
         transform.DOScale(new Vector3(1f,1f,1f),0.2f);
 	}

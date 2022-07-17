@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using TMPro;
 
 public class GunController : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class GunController : MonoBehaviour
     public float shotCounter;
     public int diceBoxSize = 6;
 
-    private Queue<int> diceQueue;
+    public Queue<int> diceQueue;
 
     public Transform firePoint;
 
@@ -24,11 +25,14 @@ public class GunController : MonoBehaviour
 
     public AudioClip[] pickSound;
 
+    public TMP_Text text;
+
   
     // Start is called before the first frame update
     void Start()
     {
         InitDiceQueue();
+        text.text=diceQueue.Count.ToString();
     }
 
     // 初始化骰子队列，随机
@@ -59,7 +63,9 @@ public class GunController : MonoBehaviour
                 ShootDice(diceQueue.Dequeue());
                 //添加没有骰子的反馈
             }
+            text.text=diceQueue.Count.ToString();
         }
+        text.text=diceQueue.Count.ToString();
     }
 
     private void ShootDice(int diceState)

@@ -9,7 +9,7 @@ public class showMoney : MonoBehaviour
     public TMP_Text text;
     void Start()
     {
-        text.text=ScoreManager.Instance.Score.ToString();
+        text.text=Scorekeeper.Instance.FetchScore().ToString();
     }
 
     // Update is called once per frame
@@ -19,6 +19,6 @@ public class showMoney : MonoBehaviour
     }
     public void reTry()
     {
-        
+
     }
 }
