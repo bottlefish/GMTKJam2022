@@ -4,49 +4,49 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]public float PlayerSpeed=5f;
-    [SerializeField]private float gravityValue=-9.81f;
-    [SerializeField]private float controllerDeadZone=0.1f;
-    [SerializeField]private float gamepadRoateSmoothing=-1000f;
+    [SerializeField] public float PlayerSpeed = 5f;
+    [SerializeField] private float gravityValue = -9.81f;
+    [SerializeField] private float controllerDeadZone = 0.1f;
+    [SerializeField] private float gamepadRoateSmoothing = -1000f;
 
-     private CharacterController controller;
+    private CharacterController controller;
 
-     public Transform debugDistance;
+    public Transform debugDistance;
 
-     public Vector2 movement;
-     private Vector2 aim;
+    public Vector2 movement;
+    private Vector2 aim;
 
-     private Vector3 playerVelocity;
+    // 延45度角移动
+    private Quaternion moveQuaternion = Quaternion.AngleAxis(45f, Vector3.up);
+
+    private Vector3 playerVelocity;
     // Start is called before the first frame update
     void Start()
     {
-        controller=GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
     }
 
     void HandleInput()
     {
-        movement=new Vector3(Input.GetAxisRaw("Vertical"),Input.GetAxisRaw("Horizontal"));
+        movement = new Vector3(Input.GetAxisRaw("Vertical"), Input.GetAxisRaw("Horizontal"));
         //Debug.Log(movement);
     }
 
     void HandleMovement()
     {
-        Vector3 move=new Vector3(movement.x,0,-movement.y);
-        controller.Move(move*Time.deltaTime*PlayerSpeed);
-        
+        Vector3 move = moveQuaternion * new Vector3(movement.x, 0, -movement.y);
+        controller.Move(move * Time.deltaTime * PlayerSpeed);
     }
     void HandleRoation()
     {
-        Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane=new Plane(Vector3.up,Vector3.zero);
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
         float rayDistance;
-        if(groundPlane.Raycast(ray,out rayDistance))
+        if (groundPlane.Raycast(ray, out rayDistance))
         {
-            Vector3 point=ray.GetPoint(rayDistance);
-           
-            transform.LookAt(new Vector3(point.x,transform.position.y,point.z));
-           
-            
+            Vector3 point = ray.GetPoint(rayDistance);
+
+            transform.LookAt(new Vector3(point.x, transform.position.y, point.z));
         }
     }
 
