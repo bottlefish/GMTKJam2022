@@ -7,7 +7,7 @@ public class Timer : MonoBehaviour
     // Start is called before the first frame update
     public bool isCountingDown;
 	public int maxTime; //If counting up, this becomes a failsafe to prevent int overflow.
-	public Text time;
+	//public Text time;
 
 	private bool _timerRunning;
 	public bool TimerRunning {
@@ -36,7 +36,7 @@ public class Timer : MonoBehaviour
 		minutes = Mathf.FloorToInt(timer/60f);
 		seconds = Mathf.FloorToInt(timer - minutes * 60);
 		niceTime = string.Format("{0:0}:{1:00}", minutes, seconds);
-		time.text = niceTime;
+		//time.text = niceTime;
 	}
 
     //countUp用于增加时间

@@ -20,6 +20,21 @@ public class EnemyAiTutorial : MonoBehaviour
     bool alreadyAttacked;
     public GameObject projectile;
 
+    private float timeUpdatePlayerPos=0.02f;
+
+    private Vector3 target;
+
+    public enum AItype
+    {
+        follow,
+        predict
+    }
+
+    public AItype aiType;
+
+   
+
+
     //States
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
@@ -28,6 +43,11 @@ public class EnemyAiTutorial : MonoBehaviour
     {
         player = GameObject.Find("PlayerObj").transform;
         agent = GetComponent<NavMeshAgent>();
+    }
+    private void Start() {
+        float distance= Vector3.Distance(transform.position,player.transform.position);
+        float time=distance/agent.speed;
+        target=player.GetComponent<Rigidbody>().velocity*player.GetComponent<PlayerMovement>().PlayerSpeed;
     }
 
     private void Update()
@@ -39,7 +59,27 @@ public class EnemyAiTutorial : MonoBehaviour
     }
     private void ChasePlayer()
     {
-        agent.SetDestination(player.position);
+        if(aiType==AItype.follow)
+        {
+            agent.SetDestination(player.position);
+        }
+        if(aiType==AItype.predict)
+        {
+            timeUpdatePlayerPos-=Time.deltaTime;
+            if(timeUpdatePlayerPos<=0)
+            {
+            
+            timeUpdatePlayerPos=1;
+
+            Debug.Log(target+""+transform.position+""+player.transform.position);
+
+            } 
+            float distance= Vector3.Distance(transform.position,player.transform.position);
+            float time=distance/agent.speed;
+            target= new Vector3( player.GetComponent<PlayerMovement>().movement.x,0, player.GetComponent<PlayerMovement>().movement.y)*5f +player.transform.position;          
+            agent.SetDestination(new Vector3(target.x,transform.position.y,target.z));
+        }
+        
     }
 
     /*private void AttackPlayer()
@@ -83,5 +123,14 @@ public class EnemyAiTutorial : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightRange);
+    }
+
+    private void OnCollisionEnter(Collision other) {
+        if(other.transform.tag=="Player")
+        {
+            Destroy(this.gameObject);
+            other.transform.GetComponent<PlayerHealth>().UpdateHealth();
+
+        }
     }
 }

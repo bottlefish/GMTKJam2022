@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField]private float PlayerSpeed=5f;
+    [SerializeField]public float PlayerSpeed=5f;
     [SerializeField]private float gravityValue=-9.81f;
     [SerializeField]private float controllerDeadZone=0.1f;
     [SerializeField]private float gamepadRoateSmoothing=-1000f;
 
      private CharacterController controller;
 
-     private Vector2 movement;
+     public Vector2 movement;
      private Vector2 aim;
 
      private Vector3 playerVelocity;
