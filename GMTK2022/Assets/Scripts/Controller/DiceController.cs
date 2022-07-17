@@ -5,9 +5,6 @@ using DG.Tweening;
 
 public class DiceController : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    // Update is called once per frame
     public float ForceAmount = 10000f;
     public float TorqueAmount = 20f;
 
