@@ -17,6 +17,14 @@ public class ScoreManager : Singleton<ScoreManager>
     }
 
     /// <summary>
+    /// 计分器清零
+    /// </summary>
+    public void InitScoreManager()
+    {
+        totalScore = 0;
+    }
+
+    /// <summary>
     /// 检查场上骰子阵型并算分，骰子落地和销毁都要触发
     /// </summary>
     public void CheckDiceInScene()
@@ -37,6 +45,7 @@ public class ScoreManager : Singleton<ScoreManager>
 
         // 计算总分
         totalScore += checkResult.GetScore();
+        Debug.Log(totalScore);
         // 回收骰子
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GunController gun = player.GetComponent<GunController>();
