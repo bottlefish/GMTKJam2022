@@ -40,7 +40,7 @@ public class EnemyAiTutorial : MonoBehaviour
 
 
     //States
-    public float sightRange, attackRange;
+    private float attackRange=1f;
     //public bool playerInSightRange, playerInAttackRange;
 
     private void Awake()
@@ -156,7 +156,7 @@ public class EnemyAiTutorial : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, sightRange);
+       // Gizmos.DrawWireSphere(transform.position, sightRange);
     }
 
     private void OnCollisionEnter(Collision other) {
