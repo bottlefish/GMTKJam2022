@@ -91,10 +91,8 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         AbstractRule straightDrawRule = new StraightDrawRule();
         AbstractRule flushDrawRule = new FlushDrawRule();
-        AbstractRule doublePairsRule = new DoublePairsRule();
 
         straightDrawRule.SetNextRule(flushDrawRule);
-        flushDrawRule.SetNextRule(doublePairsRule);
 
         return straightDrawRule;
     }
@@ -162,13 +160,9 @@ public class StraightDrawRule : AbstractRule
 {
     public override int GetScore()
     {
-        if (this.diceIDList.Count < 4)
+        if (this.diceIDList.Count < 5)
         {
             return 0;
-        }
-        else if (this.diceIDList.Count == 4)
-        {
-            return 30;
         }
         else if (this.diceIDList.Count == 5)
         {
@@ -191,7 +185,7 @@ public class StraightDrawRule : AbstractRule
                 res.Add(diceState[0]);
                 stae.Add(diceState[0].State);
             }
-            else if (res.Count < 4)
+            else if (res.Count < 5)
             {
                 res.Clear();
                 stae.Clear();
@@ -202,17 +196,7 @@ public class StraightDrawRule : AbstractRule
             }
         }
 
-        return res.Count < 4 ? new List<DiceController>() : res;
-    }
-
-    private string ToStringA(List<int> stae)
-    {
-        string a = "";
-        foreach (var ax in stae)
-        {
-            a = a + ax;
-        }
-        return a;
+        return res.Count < 5 ? new List<DiceController>() : res;
     }
 }
 
@@ -223,13 +207,9 @@ public class FlushDrawRule : AbstractRule
 {
     public override int GetScore()
     {
-        if (this.diceIDList.Count < 3)
+        if (this.diceIDList.Count < 4)
         {
             return 0;
-        }
-        else if (this.diceIDList.Count == 3)
-        {
-            return 30;
         }
         else if (this.diceIDList.Count == 4)
         {
@@ -258,7 +238,7 @@ public class FlushDrawRule : AbstractRule
             }
         }
 
-        if (maxLen >= 3)
+        if (maxLen >= 4)
         {
             return diceStateArray[maxLenIdx];
         }
