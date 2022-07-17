@@ -66,6 +66,10 @@ public class ScoreManager : Singleton<ScoreManager>
         }
         AbstractRule checkResult = rulesChain.CheckRule(diceStateArray);
 
+        // TODO 
+        // 规则类型
+        string ruleType = checkResult.GetRuleType();
+
         // 计算总分
         totalScore += checkResult.GetScore();
         // 回收骰子
@@ -155,6 +159,8 @@ public abstract class AbstractRule
 
     // 返回分数
     public abstract int GetScore();
+
+    public abstract string GetRuleType();
 }
 
 /// <summary>
@@ -201,6 +207,18 @@ public class StraightDrawRule : AbstractRule
         }
 
         return res.Count < 5 ? new List<DiceController>() : res;
+    }
+
+    public override string GetRuleType()
+    {
+        if (this.diceIDList.Count == 0)
+        {
+            return "NoRule";
+        }
+        else
+        {
+            return "StraightDraw";
+        }
     }
 }
 
@@ -249,6 +267,18 @@ public class FlushDrawRule : AbstractRule
 
         return new List<DiceController>();
     }
+
+    public override string GetRuleType()
+    {
+        if (this.diceIDList.Count == 0)
+        {
+            return "NoRule";
+        }
+        else
+        {
+            return "FlushDraw";
+        }
+    }
 }
 
 /// <summary>
@@ -285,5 +315,17 @@ public class DoublePairsRule : AbstractRule
         }
 
         return new List<DiceController>();
+    }
+
+    public override string GetRuleType()
+    {
+        if (this.diceIDList.Count == 0)
+        {
+            return "NoRule";
+        }
+        else
+        {
+            return "DoublePairs";
+        }
     }
 }
