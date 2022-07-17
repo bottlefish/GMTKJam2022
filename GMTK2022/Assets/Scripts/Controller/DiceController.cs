@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.VFX;
 
 public class DiceController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class DiceController : MonoBehaviour
 
     // Update is called once per frame
     public float ForceAmount = 10000f;
+    public Transform[] diceNumer;
     public float TorqueAmount = 20f;
 
     public float randomRadius = 6f;
@@ -25,6 +27,18 @@ public class DiceController : MonoBehaviour
     private GunController gun;
 
     private Rigidbody rb;
+
+      public AudioClip[] diceSound;
+      public AudioClip[] dicedropA;
+      public AudioClip[] dicedropB;
+
+      public ParticleSystem[] hitwall;
+      public VisualEffect enemyDie;
+      public ParticleSystem[] hitEnemy;
+
+      public Material black;
+      public Material red;
+
 
     /*public enum State{
         one,
@@ -99,37 +113,58 @@ public class DiceController : MonoBehaviour
         }
 
     }*/
-
+     void ChangeMaterial(Material newMat,Transform parent)
+     {
+         Renderer[] children;
+         children = parent.GetComponentsInChildren<Renderer>();
+         foreach (Renderer rend in children)
+         {
+             var mats = new Material[rend.materials.Length];
+             for (var j = 0; j < rend.materials.Length; j++)
+             {
+                 mats[j] = newMat;
+             }
+             rend.materials = mats;
+         }
+     }
     void SetDiceFace()
     {
+        ChangeMaterial(black,transform.GetChild(0));
         if (state == 1)
         {
             transform.eulerAngles = new Vector3(0f, 0, 0f);
+            ChangeMaterial(red,diceNumer[0]);
+            
         }
         if (state == 2)
         {
             // transform.DORotate(new Vector3(0,0,90),0.1f);
             transform.eulerAngles = new Vector3(0f, 0, 90f);
+             ChangeMaterial(red,diceNumer[1]);
         }
         if (state == 3)
         {
             //transform.DORotate(new Vector3(180,0,0),0.1f);
             transform.eulerAngles = new Vector3(270f, 0, 0f);
+            ChangeMaterial(red,diceNumer[2]);
         }
         if (state == 4)
         {
             //transform.DORotate(new Vector3(90,0,0),0.1f);
             transform.eulerAngles = new Vector3(90f, 0, 0f);
+            ChangeMaterial(red,diceNumer[3]);
         }
         if (state == 5)
         {
             //transform.DORotate(new Vector3(0,0,270),0.1f);
             transform.eulerAngles = new Vector3(0, 0, 270f);
+            ChangeMaterial(red,diceNumer[4]);
         }
         if (state == 6)
         {
             //transform.DORotate(new Vector3(180,0,0),0.1f);
             transform.eulerAngles = new Vector3(180, 0, 0);
+            ChangeMaterial(red,diceNumer[5]);
         }
         else
         {
@@ -151,6 +186,7 @@ public class DiceController : MonoBehaviour
 
     void DoDiceRoll()
     {
+        AudioManager.Instance.Diceplaysound(diceSound[Random.Range(0,diceSound.Length)]);
         haveDiced = true;
         transform.GetComponent<Rigidbody>().freezeRotation = false;
         //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
@@ -179,7 +215,10 @@ public class DiceController : MonoBehaviour
         {
             target.z = xMax.transform.position.z;
         }
-
+        
+             
+        
+        
 
         transform.DOMove(target, 0.4f);
         transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
@@ -195,10 +234,13 @@ public class DiceController : MonoBehaviour
 
                 transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
+                    AudioManager.Instance.Diceplaysound( dicedropA[Random.Range(0,dicedropA.Length)]);
+                    AudioManager.Instance.Diceplaysound2( dicedropB[Random.Range(0,dicedropB.Length)]);
 
                     transform.GetComponent<Rigidbody>().isKinematic = true;
                     canDestoryEnemy = !canDestoryEnemy;
                     ScoreManager.Instance.CheckDiceInScene();
+                    
                 });
             }
         );
@@ -210,10 +252,18 @@ public class DiceController : MonoBehaviour
 
         if (other.transform.tag == "Enemy")
         {
+            Instantiate(hitEnemy[0],other.transform.position,Quaternion.identity);
+            Instantiate(hitEnemy[1],other.transform.position,Quaternion.identity);
+            foreach(ParticleSystem p in hitEnemy)
+            {
+                p. Play();
+            }
             transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
             if (canDestoryEnemy)
             {
                 Destroy(other.gameObject);
+                Instantiate(enemyDie,other.gameObject.transform.position,Quaternion.identity);
+                enemyDie.Play();
 
             }
 
@@ -225,6 +275,12 @@ public class DiceController : MonoBehaviour
         }
         if (other.transform.tag == "Wall")
         {
+             Instantiate(hitwall[0],other.transform.position,Quaternion.identity);
+            Instantiate(hitwall[1],other.transform.position,Quaternion.identity);
+            foreach(ParticleSystem p in hitEnemy)
+            {
+                p. Play();
+            }
 
             transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
             if (!haveDiced)
@@ -232,6 +288,7 @@ public class DiceController : MonoBehaviour
                 haveDiced = true;
                 Vector3 tempPos = transform.position;
                 transform.GetComponent<Rigidbody>().freezeRotation = false;
+                AudioManager.Instance.Diceplaysound(diceSound[Random.Range(0,diceSound.Length)]);
                 transform.DOLocalMove(other.transform.forward * 2 + tempPos, 0.5f);
                 transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
                 {
@@ -243,6 +300,8 @@ public class DiceController : MonoBehaviour
 
                         transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                         {
+                            AudioManager.Instance.Diceplaysound( dicedropA[Random.Range(0,dicedropA.Length)]);
+                            AudioManager.Instance.Diceplaysound2( dicedropB[Random.Range(0,dicedropB.Length)]);
 
                             transform.GetComponent<Rigidbody>().isKinematic = true;
                             canDestoryEnemy = !canDestoryEnemy;
@@ -292,18 +351,22 @@ public class DiceController : MonoBehaviour
         transform.DOMove(position, 0.4f).OnComplete(() =>
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
+            Time.timeScale=0;
             StartCoroutine(DelayRecycle(2f));
         });
     }
     private IEnumerator DelayRecycle(float duration)
     {
-        //transition.SetTrigger("FadeOut");
-        float elapsed = 0;
+		//transition.SetTrigger("FadeOut");
+        transform.DOScale(new Vector3(1.5f,1.5f,1.5f),0.3f);
+		float elapsed = 0;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        gun.RecycleDice(this);
-    }
+			elapsed += Time.unscaledDeltaTime;
+			yield return null;
+		}
+         Time.timeScale=1;
+		gun.RecycleDice(this);
+        transform.DOScale(new Vector3(1f,1f,1f),0.2f);
+	}
 }
