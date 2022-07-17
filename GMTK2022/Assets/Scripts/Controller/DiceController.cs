@@ -5,10 +5,19 @@ using DG.Tweening;
 
 public class DiceController : MonoBehaviour
 {
+    // Start is called before the first frame update
+
+    // Update is called once per frame
     public float ForceAmount = 10000f;
     public float TorqueAmount = 20f;
 
     public float randomRadius=6f;
+
+    public Transform xMin;
+    public Transform xMax;
+    public Transform zMin;
+
+    public Transform zMax;
 
 
     public bool canDestoryEnemy=true;
@@ -39,6 +48,10 @@ public class DiceController : MonoBehaviour
     //
     void Start()
     {
+            xMin = GameObject.Find("xMin").transform;
+            xMax = GameObject.Find("xMax").transform;
+            zMax = GameObject.Find("zMax").transform;
+            zMin = GameObject.Find("zMin").transform;
 
     }
 
@@ -143,6 +156,25 @@ return new Vector3(vector2.x, 0, vector2.y);
                 //transform.DOLocalMoveZ(tempPos.z + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
 
                 Vector3 target=RandomPointOnCircleEdge(10)+transform.position;
+
+                if(target.x<xMin.transform.position.x)
+                {
+                    target.x=xMin.transform.position.x;
+                }
+                 if(target.x>xMax.transform.position.x)
+                {
+                    target.x=xMax.transform.position.x;
+                }
+                if(target.z<zMin.transform.position.z)
+                {
+                    target.z=zMin.transform.position.z;
+                }
+                 if(target.z>zMax.transform.position.z)
+                {
+                    target.z=xMax.transform.position.z;
+                }
+
+            
                 transform.DOMove(target,0.4f);
                 transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace();
                 transform.GetComponent<Rigidbody>().freezeRotation = true; });

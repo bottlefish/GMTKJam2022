@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
 
      private CharacterController controller;
 
+     public Transform debugDistance;
+
      public Vector2 movement;
      private Vector2 aim;
 
@@ -55,5 +57,6 @@ public class PlayerMovement : MonoBehaviour
         HandleInput();
         HandleMovement();
         HandleRoation();
+        //Debug.Log("玩家距离debugpos距离"+Vector3.Distance(transform.position, debugDistance.transform.position));
     }
 }
