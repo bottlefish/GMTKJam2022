@@ -72,6 +72,18 @@ public class GunController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 批量回收骰子
+    /// </summary>
+    /// <param name="diceBatch">骰子列表</param>
+    public void RecycleDiceBatch(List<DiceController> diceBatch)
+    {
+        foreach (var dice in diceBatch)
+        {
+            RecycleDice(dice);
+        }
+    }
+
     // 回收骰子装填弹匣
     private void RecycleDice(DiceController colliderDice)
     {
