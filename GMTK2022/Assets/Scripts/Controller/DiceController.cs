@@ -11,7 +11,7 @@ public class DiceController : MonoBehaviour
     public float ForceAmount = 10000f;
     public float TorqueAmount = 20f;
 
-    public float randomRadius=6f;
+    public float randomRadius = 6f;
 
     public Transform xMin;
     public Transform xMax;
@@ -20,7 +20,9 @@ public class DiceController : MonoBehaviour
     public Transform zMax;
 
 
-    public bool canDestoryEnemy=true;
+    public bool canDestoryEnemy = true;
+
+    private GunController gun;
 
 
     /*public enum State{
@@ -43,16 +45,17 @@ public class DiceController : MonoBehaviour
             return state;
         }
     }
-      public bool haveDiced=false;
+    public bool haveDiced = false;
 
     //
     void Start()
     {
-            xMin = GameObject.Find("xMin").transform;
-            xMax = GameObject.Find("xMax").transform;
-            zMax = GameObject.Find("zMax").transform;
-            zMin = GameObject.Find("zMin").transform;
-
+        xMin = GameObject.Find("xMin").transform;
+        xMax = GameObject.Find("xMax").transform;
+        zMax = GameObject.Find("zMax").transform;
+        zMin = GameObject.Find("zMin").transform;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        gun = player.GetComponent<GunController>();
     }
 
     void Update()
@@ -137,118 +140,124 @@ public class DiceController : MonoBehaviour
         state = Random.Range(1, 7);
         SetDiceFace();
     }
-private Vector3 RandomPointOnCircleEdge(float radius)
-{
-var vector2 = Random.insideUnitCircle.normalized * radius;
-return new Vector3(vector2.x, 0, vector2.y);
-}
+    private Vector3 RandomPointOnCircleEdge(float radius)
+    {
+        var vector2 = Random.insideUnitCircle.normalized * radius;
+        return new Vector3(vector2.x, 0, vector2.y);
+    }
 
     void DoDiceRoll()
     {
-                haveDiced=true;
-                transform.GetComponent<Rigidbody>().freezeRotation = false;
-                //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
-                Vector3 tempPos=transform.position;
+        haveDiced = true;
+        transform.GetComponent<Rigidbody>().freezeRotation = false;
+        //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
+        Vector3 tempPos = transform.position;
 
-                //transform.DOMove(new Vector3(Random.Range(-2f, 2f)+tempPos.x,tempPos.y,tempPos.z+Random.Range(-2f, 2f)),0.6f);
-                
-                //transform.DOLocalMoveX(tempPos.x + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
-                //transform.DOLocalMoveZ(tempPos.z + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
+        //transform.DOMove(new Vector3(Random.Range(-2f, 2f)+tempPos.x,tempPos.y,tempPos.z+Random.Range(-2f, 2f)),0.6f);
 
-                Vector3 target=RandomPointOnCircleEdge(10)+transform.position;
+        //transform.DOLocalMoveX(tempPos.x + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
+        //transform.DOLocalMoveZ(tempPos.z + Random.Range(-2f, 2f), 0.6f).SetEase(Ease.OutBack);
 
-                if(target.x<xMin.transform.position.x)
+        Vector3 target = RandomPointOnCircleEdge(10) + transform.position;
+
+        if (target.x < xMin.transform.position.x)
+        {
+            target.x = xMin.transform.position.x;
+        }
+        if (target.x > xMax.transform.position.x)
+        {
+            target.x = xMax.transform.position.x;
+        }
+        if (target.z < zMin.transform.position.z)
+        {
+            target.z = zMin.transform.position.z;
+        }
+        if (target.z > zMax.transform.position.z)
+        {
+            target.z = xMax.transform.position.z;
+        }
+
+
+        transform.DOMove(target, 0.4f);
+        transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
+        {
+            RandomDiceFace();
+            transform.GetComponent<Rigidbody>().freezeRotation = true;
+        });
+        //transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
+        //transform.GetComponent<Rigidbody>().AddForce(new Vector3(0,1,0)*ForceAmount);
+
+        transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+
+                transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
-                    target.x=xMin.transform.position.x;
-                }
-                 if(target.x>xMax.transform.position.x)
-                {
-                    target.x=xMax.transform.position.x;
-                }
-                if(target.z<zMin.transform.position.z)
-                {
-                    target.z=zMin.transform.position.z;
-                }
-                 if(target.z>zMax.transform.position.z)
-                {
-                    target.z=xMax.transform.position.z;
-                }
 
-            
-                transform.DOMove(target,0.4f);
-                transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace();
-                transform.GetComponent<Rigidbody>().freezeRotation = true; });
-                //transform.GetComponent<Rigidbody>().AddTorque(transform.up*TorqueAmount,ForceMode.Impulse);
-                //transform.GetComponent<Rigidbody>().AddForce(new Vector3(0,1,0)*ForceAmount);
-
-                transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
-                    {
-                        
-                        transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
-                        {
-                            
-                            transform.GetComponent<Rigidbody>().isKinematic = true;
-                            canDestoryEnemy=!canDestoryEnemy;
-                            ScoreManager.Instance.CheckDiceInScene();
-                        });
-                    }
-                );
+                    transform.GetComponent<Rigidbody>().isKinematic = true;
+                    canDestoryEnemy = !canDestoryEnemy;
+                    ScoreManager.Instance.CheckDiceInScene();
+                });
+            }
+        );
 
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        
+
         if (other.transform.tag == "Enemy")
         {
-            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
-            if(canDestoryEnemy)
+            transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (canDestoryEnemy)
             {
-                 Destroy(other.gameObject);
+                Destroy(other.gameObject);
 
             }
-           
 
-            if(!haveDiced)
+
+            if (!haveDiced)
             {
                 DoDiceRoll();
             }
         }
-        if(other.transform.tag=="Wall")
+        if (other.transform.tag == "Wall")
         {
-            
-            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
-            if(!haveDiced)
+
+            transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (!haveDiced)
             {
-                haveDiced=true;
-                Vector3 tempPos=transform.position;
+                haveDiced = true;
+                Vector3 tempPos = transform.position;
                 transform.GetComponent<Rigidbody>().freezeRotation = false;
-                transform.DOLocalMove(other.transform.forward*2+tempPos,0.5f);
-                transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() => { RandomDiceFace(); 
-                transform.GetComponent<Rigidbody>().freezeRotation = true;});
+                transform.DOLocalMove(other.transform.forward * 2 + tempPos, 0.5f);
+                transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
+                {
+                    RandomDiceFace();
+                    transform.GetComponent<Rigidbody>().freezeRotation = true;
+                });
                 transform.DOLocalMoveY(5, 0.6f).SetEase(Ease.OutBack).OnComplete(() =>
                     {
-                        
+
                         transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                         {
-                            
+
                             transform.GetComponent<Rigidbody>().isKinematic = true;
-                            canDestoryEnemy=!canDestoryEnemy;
+                            canDestoryEnemy = !canDestoryEnemy;
                         });
                     }
                 );
             }
         }
-        if(other.transform.tag=="Dice")
+        if (other.transform.tag == "Dice")
         {
-     
-            transform.GetComponent<Rigidbody>().velocity=Vector3.zero;
-            if(!haveDiced)
+
+            transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            if (!haveDiced)
             {
                 DoDiceRoll();
             }
-            other.transform.GetComponent<Rigidbody>().isKinematic=false;
-            other.transform.GetComponent<Rigidbody>().AddForce((other.transform.position-transform.position).normalized*8f,ForceMode.Impulse);
+            other.transform.GetComponent<Rigidbody>().isKinematic = false;
+            other.transform.GetComponent<Rigidbody>().AddForce((other.transform.position - transform.position).normalized * 8f, ForceMode.Impulse);
             //transform.DOMove(transform.position,1f).OnComplete(() => { other.transform.GetComponent<Rigidbody>().isKinematic=true;});       
         }
     }
@@ -269,5 +278,16 @@ return new Vector3(vector2.x, 0, vector2.y);
     public void DestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// 移到展示槽中
+    /// </summary>
+    /// <param name="position">展示槽位置</param>
+    public void MoveToShowSlot(Vector3 position)
+    {
+        transform.DOMove(position, 0.4f).OnComplete(() => {
+            gun.RecycleDice(this);
+        });
     }
 }
