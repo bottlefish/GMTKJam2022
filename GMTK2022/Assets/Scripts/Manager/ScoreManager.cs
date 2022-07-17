@@ -30,6 +30,9 @@ public class ScoreManager : Singleton<ScoreManager>
     public void CheckDiceInScene()
     {
         GameObject[] objArrayInScene = GameObject.FindGameObjectsWithTag("Dice");
+        if (objArrayInScene == null || objArrayInScene.Length == 0) {
+            return;
+        }
 
         // 规则校验
         List<DiceController>[] diceStateArray = InitDiceCollection();
@@ -38,14 +41,14 @@ public class ScoreManager : Singleton<ScoreManager>
             DiceController dice = obj.GetComponent<DiceController>();
             if (dice != null)
             {
-                diceStateArray[dice.State].Add(dice);
+                diceStateArray[dice.State - 1].Add(dice);
             }
         }
         AbstractRule checkResult = rulesChain.CheckRule(diceStateArray);
 
         // 计算总分
         totalScore += checkResult.GetScore();
-        Debug.Log(totalScore);
+        Debug.Log("当前分数：" + totalScore);
         // 回收骰子
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GunController gun = player.GetComponent<GunController>();
@@ -116,7 +119,10 @@ public abstract class AbstractRule
     public void Clear()
     {
         this.diceIDList = null;
-        this.nextRule.Clear();
+        if (this.nextRule != null)
+        {
+            this.nextRule.Clear();
+        }
     }
 
     /// <summary>
