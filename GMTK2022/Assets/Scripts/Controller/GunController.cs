@@ -16,6 +16,10 @@ public class GunController : MonoBehaviour
 
     public Transform firePoint;
 
+    public AudioClip noAmmoSound;
+
+    public AudioClip[] shootShound;
+
   
     // Start is called before the first frame update
     void Start()
@@ -40,6 +44,7 @@ public class GunController : MonoBehaviour
         {
             if (diceQueue.Count == 0)
             {
+                AudioManager.Instance.playsound(noAmmoSound);
                 // 手上没有骰子了
                 Debug.Log("手上没有骰子！");
                 return;
@@ -55,6 +60,7 @@ public class GunController : MonoBehaviour
 
     private void ShootDice(int diceState)
     {
+        AudioManager.Instance.playsound(shootShound[Random.Range(0,shootShound.Length)]);
         Debug.Log("点数：" + diceState);
         DiceController newDice = Instantiate(dice, firePoint.position, Quaternion.identity) as DiceController;
         // 为新骰子设置点数

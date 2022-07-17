@@ -26,6 +26,8 @@ public class DiceController : MonoBehaviour
 
     private Rigidbody rb;
 
+      public AudioClip[] diceSound;
+
     /*public enum State{
         one,
         two,
@@ -151,6 +153,7 @@ public class DiceController : MonoBehaviour
 
     void DoDiceRoll()
     {
+        AudioManager.Instance.Diceplaysound(diceSound[Random.Range(0,diceSound.Length)]);
         haveDiced = true;
         transform.GetComponent<Rigidbody>().freezeRotation = false;
         //transform.DOJump(new Vector3(transform.position.x,transform.position.y+5,transform.position.z),2,1,0.5f,true);
@@ -179,7 +182,9 @@ public class DiceController : MonoBehaviour
         {
             target.z = xMax.transform.position.z;
         }
-
+             
+        
+        
 
         transform.DOMove(target, 0.4f);
         transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
@@ -232,6 +237,7 @@ public class DiceController : MonoBehaviour
                 haveDiced = true;
                 Vector3 tempPos = transform.position;
                 transform.GetComponent<Rigidbody>().freezeRotation = false;
+                AudioManager.Instance.Diceplaysound(diceSound[Random.Range(0,diceSound.Length)]);
                 transform.DOLocalMove(other.transform.forward * 2 + tempPos, 0.5f);
                 transform.DORotate(new Vector3(30, 30, 30), 0.02f).SetLoops(24, LoopType.Incremental).OnComplete(() =>
                 {
@@ -297,13 +303,13 @@ public class DiceController : MonoBehaviour
     }
     private IEnumerator DelayRecycle(float duration)
     {
-        //transition.SetTrigger("FadeOut");
-        float elapsed = 0;
+		//transition.SetTrigger("FadeOut");
+		float elapsed = 0;
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-        gun.RecycleDice(this);
-    }
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+		gun.RecycleDice(this);
+	}
 }
