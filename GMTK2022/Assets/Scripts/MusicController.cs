@@ -6,7 +6,11 @@ public class MusicController : MonoBehaviour
 {
     // Start is called before the first frame update
     public AudioSource au;
+
+    public AudioSource reminder;
     public AudioClip[] clips;
+
+    public PlayerHealth hp;
     void Start()
     {
         au.loop=false;
@@ -16,6 +20,7 @@ public class MusicController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        reminder.volume=1/hp.health;
         
     }
     IEnumerator MainLoop()

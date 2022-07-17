@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.VFX;
 
 public class DiceController : MonoBehaviour
 {
@@ -27,6 +28,13 @@ public class DiceController : MonoBehaviour
     private Rigidbody rb;
 
       public AudioClip[] diceSound;
+      public AudioClip[] dicedropA;
+      public AudioClip[] dicedropB;
+
+      public ParticleSystem[] hitwall;
+      public VisualEffect enemyDie;
+      public ParticleSystem[] hitEnemy;
+
 
     /*public enum State{
         one,
@@ -182,6 +190,7 @@ public class DiceController : MonoBehaviour
         {
             target.z = xMax.transform.position.z;
         }
+        
              
         
         
@@ -200,10 +209,13 @@ public class DiceController : MonoBehaviour
 
                 transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                 {
+                    AudioManager.Instance.Diceplaysound( dicedropA[Random.Range(0,dicedropA.Length)]);
+                    AudioManager.Instance.Diceplaysound2( dicedropB[Random.Range(0,dicedropB.Length)]);
 
                     transform.GetComponent<Rigidbody>().isKinematic = true;
                     canDestoryEnemy = !canDestoryEnemy;
                     ScoreManager.Instance.CheckDiceInScene();
+                    
                 });
             }
         );
@@ -215,10 +227,18 @@ public class DiceController : MonoBehaviour
 
         if (other.transform.tag == "Enemy")
         {
+            Instantiate(hitEnemy[0],other.transform.position,Quaternion.identity);
+            Instantiate(hitEnemy[1],other.transform.position,Quaternion.identity);
+            foreach(ParticleSystem p in hitEnemy)
+            {
+                p. Play();
+            }
             transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
             if (canDestoryEnemy)
             {
                 Destroy(other.gameObject);
+                Instantiate(enemyDie,other.gameObject.transform.position,Quaternion.identity);
+                enemyDie.Play();
 
             }
 
@@ -230,6 +250,12 @@ public class DiceController : MonoBehaviour
         }
         if (other.transform.tag == "Wall")
         {
+             Instantiate(hitwall[0],other.transform.position,Quaternion.identity);
+            Instantiate(hitwall[1],other.transform.position,Quaternion.identity);
+            foreach(ParticleSystem p in hitEnemy)
+            {
+                p. Play();
+            }
 
             transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
             if (!haveDiced)
@@ -249,6 +275,8 @@ public class DiceController : MonoBehaviour
 
                         transform.DOLocalMoveY(0, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
                         {
+                            AudioManager.Instance.Diceplaysound( dicedropA[Random.Range(0,dicedropA.Length)]);
+                            AudioManager.Instance.Diceplaysound2( dicedropB[Random.Range(0,dicedropB.Length)]);
 
                             transform.GetComponent<Rigidbody>().isKinematic = true;
                             canDestoryEnemy = !canDestoryEnemy;

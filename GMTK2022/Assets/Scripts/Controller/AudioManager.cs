@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour
 	public AudioSource soundSource;
 
     public AudioSource dicesoundSource;
+    public AudioSource dicesoundSource2;
     public AudioSource musicSource;
 
 	void Awake(){
@@ -36,6 +37,12 @@ public class AudioManager : MonoBehaviour
     {
         dicesoundSource.clip=sound;
         dicesoundSource.Play();  
+
+    }
+     public void Diceplaysound2(AudioClip sound)
+    {
+        dicesoundSource2.clip=sound;
+        dicesoundSource2.Play();  
 
     }
 
