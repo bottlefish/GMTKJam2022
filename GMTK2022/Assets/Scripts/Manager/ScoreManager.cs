@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 管理全场的骰子
@@ -15,6 +16,7 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         get { return totalScore; }
     }
+    private static Vector3[] slotPosition = SlotPosition();
 
     /// <summary>
     /// 计分器清零
@@ -24,13 +26,24 @@ public class ScoreManager : Singleton<ScoreManager>
         totalScore = 0;
     }
 
+    private static Vector3[] SlotPosition()
+    {
+        Vector3[] res = new Vector3[6];
+        for (int i = 0; i < 6; i++)
+        {
+            res[i] = new Vector3(-18, 0, 11 - 2 * i);
+        }
+        return res;
+    }
+
     /// <summary>
     /// 检查场上骰子阵型并算分，骰子落地和销毁都要触发
     /// </summary>
     public void CheckDiceInScene()
     {
         GameObject[] objArrayInScene = GameObject.FindGameObjectsWithTag("Dice");
-        if (objArrayInScene == null || objArrayInScene.Length == 0) {
+        if (objArrayInScene == null || objArrayInScene.Length == 0)
+        {
             return;
         }
 
@@ -48,11 +61,13 @@ public class ScoreManager : Singleton<ScoreManager>
 
         // 计算总分
         totalScore += checkResult.GetScore();
-        Debug.Log("当前分数：" + totalScore);
         // 回收骰子
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GunController gun = player.GetComponent<GunController>();
-        gun.RecycleDiceBatch(checkResult.diceIDList);
+        for (int i = 0; i < checkResult.diceIDList.Count; i++)
+        {
+            checkResult.diceIDList[i].MoveToShowSlot(slotPosition[i]);
+        }
 
         // 责任链结果清空
         rulesChain.Clear();
@@ -101,7 +116,8 @@ public abstract class AbstractRule
     /// </summary>
     /// <param name="diceStateArray">当前场上骰子状况</param>
     /// <returns>规则结果</returns>
-    public AbstractRule CheckRule(List<DiceController>[] diceStateArray) {
+    public AbstractRule CheckRule(List<DiceController>[] diceStateArray)
+    {
         diceIDList = CheckSelfRule(diceStateArray);
         if (diceIDList.Count != 0 || nextRule == null)
         {
@@ -164,16 +180,18 @@ public class StraightDrawRule : AbstractRule
     public override List<DiceController> CheckSelfRule(List<DiceController>[] diceStateArray)
     {
         List<DiceController> res = new List<DiceController>();
-
+        List<int> stae = new List<int>();
         foreach (var diceState in diceStateArray)
         {
             if (diceState.Count != 0)
             {
                 res.Add(diceState[0]);
+                stae.Add(diceState[0].State);
             }
             else if (res.Count < 4)
             {
                 res.Clear();
+                stae.Clear();
             }
             else
             {
@@ -181,7 +199,17 @@ public class StraightDrawRule : AbstractRule
             }
         }
 
-        return res;
+        return res.Count < 4 ? new List<DiceController>() : res;
+    }
+
+    private string ToStringA(List<int> stae)
+    {
+        string a = "";
+        foreach (var ax in stae)
+        {
+            a = a + ax;
+        }
+        return a;
     }
 }
 
@@ -265,10 +293,10 @@ public class DoublePairsRule : AbstractRule
 
             if (res.Count >= 4)
             {
-                break;
+                return res;
             }
         }
 
-        return res;
+        return new List<DiceController>();
     }
 }
