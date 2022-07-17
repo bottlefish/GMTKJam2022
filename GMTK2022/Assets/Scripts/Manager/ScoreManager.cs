@@ -18,6 +18,9 @@ public class ScoreManager : Singleton<ScoreManager>
     }
     private static Vector3[] slotPosition = SlotPosition();
 
+    public Transform slotInitPos;
+  
+
     /// <summary>
     /// 计分器清零
     /// </summary>
@@ -31,7 +34,7 @@ public class ScoreManager : Singleton<ScoreManager>
         Vector3[] res = new Vector3[6];
         for (int i = 0; i < 6; i++)
         {
-            res[i] = new Vector3(-18, 0, 11 - 2 * i);
+            res[i] = new Vector3(19.73743f, 4.460415f, 5.226065f - 2 * i);
         }
         return res;
     }

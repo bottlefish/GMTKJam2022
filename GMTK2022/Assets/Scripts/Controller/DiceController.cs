@@ -286,8 +286,17 @@ public class DiceController : MonoBehaviour
     /// <param name="position">展示槽位置</param>
     public void MoveToShowSlot(Vector3 position)
     {
-        transform.DOMove(position, 0.4f).OnComplete(() => {
-            gun.RecycleDice(this);
+        transform.DOMove(position, 0.4f).OnComplete(() => {StartCoroutine(DelayRecycle(2f));
+            
         });
     }
+    private IEnumerator DelayRecycle(float duration){
+		//transition.SetTrigger("FadeOut");
+		float elapsed = 0;
+		while (elapsed < duration){
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+		gun.RecycleDice(this);
+	}
 }
