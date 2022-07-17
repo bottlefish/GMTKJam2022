@@ -11,6 +11,11 @@ public class GameManager : MonoBehaviour
     public GameObject clock;
 	public Animator transition;
 
+	public GameObject[] successType;
+
+
+
+
 	public static GameManager Instance;
 
 	private bool _isGameRunning;
@@ -27,6 +32,7 @@ public class GameManager : MonoBehaviour
 			clock.GetComponent<Timer>().StartClock();
 		}
 		IsGameRunning = true;
+		ScoreManager.Instance.InitScoreManager();
 	}
 
 	public void PauseGame(bool isPaused){
@@ -52,5 +58,22 @@ public class GameManager : MonoBehaviour
 			yield return null;
 		}
 		SceneManager.LoadSceneAsync("GameOver");
+	}
+
+public void ShowSuccess(int type)
+{
+	StartCoroutine(ShowType(type));
+
+}
+public IEnumerator ShowType(int type){
+		//transition.SetTrigger("FadeOut");
+		successType[type].SetActive(true);
+		float elapsed = 0;
+		while (elapsed < 1.2f){
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+		successType[type].SetActive(false);
+		
 	}
 }

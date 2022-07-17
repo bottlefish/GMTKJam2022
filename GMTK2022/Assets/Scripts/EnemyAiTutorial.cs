@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine;
 using UnityEngine.AI;
+using DG.Tweening;
 
 public class EnemyAiTutorial : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class EnemyAiTutorial : MonoBehaviour
 
     private Vector3 target;
 
+    
+
     public enum AItype
     {
         follow,
@@ -32,12 +35,13 @@ public class EnemyAiTutorial : MonoBehaviour
 
     public AItype aiType;
 
+
    
 
 
     //States
     public float sightRange, attackRange;
-    public bool playerInSightRange, playerInAttackRange;
+    //public bool playerInSightRange, playerInAttackRange;
 
     private void Awake()
     {
@@ -51,11 +55,34 @@ public class EnemyAiTutorial : MonoBehaviour
     }
 
     private void Update()
-    {
+    {   if(!isInAttackRange())
+        {
+            ChasePlayer();
+        }
+        else
+        {
+            AttackPlayer();
+
+        }
  
         //if (!playerInAttackRange) ChasePlayer();
         ChasePlayer();
         //if (playerInAttackRange) AttackPlayer();
+    }
+
+    bool isInAttackRange()
+    {
+        float distance= Vector3.Distance(transform.position,player.transform.position);
+        if(distance<=attackRange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+        
     }
     private void ChasePlayer()
     {
@@ -82,10 +109,17 @@ public class EnemyAiTutorial : MonoBehaviour
         
     }
 
-    /*private void AttackPlayer()
+    private void AttackPlayer()
     {
+        transform.DOMove(player.transform.position,0.3f);
+        transform.DOLocalMoveY(3, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+                    {                       
+                        transform.DOMove(player.transform.position,0.1f);
+                        
+                    });
+                 
         //Make sure enemy doesn't move
-        agent.SetDestination(transform.position);
+        /*agent.SetDestination(transform.position);
 
         transform.LookAt(player);
 
@@ -99,8 +133,8 @@ public class EnemyAiTutorial : MonoBehaviour
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
-        }
-    }*/
+        }*/
+    }
     private void ResetAttack()
     {
         alreadyAttacked = false;
