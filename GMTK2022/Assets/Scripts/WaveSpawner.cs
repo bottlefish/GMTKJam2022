@@ -34,7 +34,8 @@ public class WaveSpawner : MonoBehaviour
 
     void Start()
     {
-        waveCountDown = timeBetweenWaves;
+        //开场等待2秒刷怪
+        waveCountDown = 2;
 
         spawnPoint.Clear();
         if (spawnPoints.Length == 0)
@@ -48,14 +49,7 @@ public class WaveSpawner : MonoBehaviour
 
         if (state == SpawnState.WAITING)
         {
-            if (!EnemyIsAlive())
-            {
-                WaveCompleted();
-            }
-            else
-            {
-                return;
-            }
+            WaveCompleted();
         }
 
         if (waveCountDown <= 0)

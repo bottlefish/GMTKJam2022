@@ -20,7 +20,16 @@ public class MusicController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        reminder.volume=1/hp.health;
+        if(hp.health!=0)
+        {
+            reminder.volume=1/hp.health;
+        }
+        else
+        {
+            reminder.volume=1;
+        }
+        
+        
         
     }
     IEnumerator MainLoop()
