@@ -114,7 +114,7 @@ public class DiceController : MonoBehaviour
         if (state == 3)
         {
             //transform.DORotate(new Vector3(180,0,0),0.1f);
-            transform.eulerAngles = new Vector3(180f, 0, 0f);
+            transform.eulerAngles = new Vector3(270f, 0, 0f);
         }
         if (state == 4)
         {
