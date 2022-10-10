@@ -73,7 +73,7 @@ public class EnemyAiTutorial : MonoBehaviour
     bool isInAttackRange()
     {
         float distance= Vector3.Distance(transform.position,player.transform.position);
-        if(distance<=attackRange)
+        if(distance<=attackRange && !player.GetComponent<PlayerMovement>().isDashing)
         {
             return true;
         }

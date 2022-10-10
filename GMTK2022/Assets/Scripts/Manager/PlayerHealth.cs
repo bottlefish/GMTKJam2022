@@ -22,6 +22,8 @@ public class PlayerHealth : MonoBehaviour
 	}
 
 	public void UpdateHealth(){
+        //@Snoww£∫≥Â¥Ã÷–≤ª ‹…À∫¶
+        if (GetComponent<PlayerMovement>().isDashing) return;
 		health -= 1;
         AudioManager.Instance.playsound(behited[0]);
         AudioManager.Instance.playsound2(behited[1]);
