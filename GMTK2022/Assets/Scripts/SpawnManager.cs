@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [SerializeField]public GameObject enemy;
-    public float timer=3f;
+    [SerializeField] public GameObject enemy;
+    public float timer = 3f;
 
-    private float clock=1f;
+    private float clock = 1f;
 
-    public float numInWave=4f;
+    public float numInWave = 4f;
 
-    public float spawnRange=6f;
+    public float spawnRange = 6f;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,21 +21,21 @@ public class SpawnManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        clock-=Time.deltaTime;
-        if(clock<=0)
+        clock -= Time.deltaTime;
+        if (clock <= 0)
         {
             SpawnEnemy();
-            clock=timer;
-            
+            clock = timer;
+
 
         }
     }
     void SpawnEnemy()
     {
-        for(int i=0;i<numInWave;i++)
+        for (int i = 0; i < numInWave; i++)
         {
-            Vector3 temp=Random.insideUnitCircle*spawnRange;
-            Instantiate(enemy,temp+transform.position,Quaternion.identity);
+            Vector3 temp = Random.insideUnitCircle * spawnRange;
+            Instantiate(enemy, temp + transform.position, Quaternion.identity);
         }
 
     }

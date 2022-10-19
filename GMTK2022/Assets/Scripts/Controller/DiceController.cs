@@ -13,6 +13,8 @@ public class DiceController : MonoBehaviour
     public Transform[] diceNumer;
     public float TorqueAmount = 20f;
 
+    public GameObject ExplodeGameObject;
+
     public float randomRadius = 6f;
 
     public Transform xMin;
@@ -38,6 +40,9 @@ public class DiceController : MonoBehaviour
 
       public Material black;
       public Material red;
+
+    public Material[] AllMaterials;
+
 
 
     /*public enum State{
@@ -133,38 +138,38 @@ public class DiceController : MonoBehaviour
         if (state == 1)
         {
             transform.eulerAngles = new Vector3(0f, 0, 0f);
-            ChangeMaterial(red,diceNumer[0]);
+            ChangeMaterial(AllMaterials[0], diceNumer[0]);
             
         }
         if (state == 2)
         {
             // transform.DORotate(new Vector3(0,0,90),0.1f);
             transform.eulerAngles = new Vector3(0f, 0, 90f);
-             ChangeMaterial(red,diceNumer[1]);
+             ChangeMaterial(AllMaterials[1], diceNumer[1]);
         }
         if (state == 3)
         {
             //transform.DORotate(new Vector3(180,0,0),0.1f);
             transform.eulerAngles = new Vector3(270f, 0, 0f);
-            ChangeMaterial(red,diceNumer[2]);
+            ChangeMaterial(AllMaterials[2], diceNumer[2]);
         }
         if (state == 4)
         {
             //transform.DORotate(new Vector3(90,0,0),0.1f);
             transform.eulerAngles = new Vector3(90f, 0, 0f);
-            ChangeMaterial(red,diceNumer[3]);
+            ChangeMaterial(AllMaterials[3], diceNumer[3]);
         }
         if (state == 5)
         {
             //transform.DORotate(new Vector3(0,0,270),0.1f);
             transform.eulerAngles = new Vector3(0, 0, 270f);
-            ChangeMaterial(red,diceNumer[4]);
+            ChangeMaterial(AllMaterials[4], diceNumer[4]);
         }
         if (state == 6)
         {
             //transform.DORotate(new Vector3(180,0,0),0.1f);
             transform.eulerAngles = new Vector3(180, 0, 0);
-            ChangeMaterial(red,diceNumer[5]);
+            ChangeMaterial(AllMaterials[5], diceNumer[5]);
         }
         else
         {
@@ -343,11 +348,16 @@ public class DiceController : MonoBehaviour
     }
 
     /// <summary>
-    /// 移到展示槽中
+    /// 执行特效（爆炸、回血等），并移到展示槽中 
+    /// TODO：把RuleType换成枚举类型
     /// </summary>
     /// <param name="position">展示槽位置</param>
-    public void MoveToShowSlot(Vector3 position)
+    public void TakeEffectAndMoveToShowSlot(string Type,Vector3 position)
     {
+        if (Type.CompareTo("FlushDraw") == 0)
+        {
+            SpawnExplode();
+        }
         transform.DOMove(position, 0.4f).OnComplete(() =>
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
@@ -369,4 +379,9 @@ public class DiceController : MonoBehaviour
 		gun.RecycleDice(this);
         transform.DOScale(new Vector3(1f,1f,1f),0.2f);
 	}
+
+    public void SpawnExplode()
+    {
+        Instantiate(ExplodeGameObject, transform.position, Quaternion.Euler(-90,0,0));
+    }
 }

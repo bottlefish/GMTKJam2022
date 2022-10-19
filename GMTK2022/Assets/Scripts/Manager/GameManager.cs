@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
 		}
 		IsGameRunning = true;
 		ScoreManager.Instance.InitScoreManager();
+		
 	}
 
 	public void PauseGame(bool isPaused){

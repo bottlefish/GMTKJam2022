@@ -85,12 +85,17 @@ public class ScoreManager : Singleton<ScoreManager>
         // 计算总分
         totalScore += checkResult.GetScore();
         Scorekeeper.Instance.UpdateScore(checkResult.GetScore());
-        // 回收骰子
+        // 回收骰子，执行骰子效果
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GunController gun = player.GetComponent<GunController>();
         for (int i = 0; i < checkResult.diceIDList.Count; i++)
         {
-            checkResult.diceIDList[i].MoveToShowSlot(slotPosition[i]);
+            checkResult.diceIDList[i].TakeEffectAndMoveToShowSlot(ruleType,slotPosition[i]);
+        }
+        // 执行全局效果
+        if (ruleType.CompareTo("StraightDraw") == 0)
+        {
+            FindObjectOfType<PlayerHealth>().RestoreLife(100);
         }
 
         // 责任链结果清空
@@ -242,17 +247,17 @@ public class FlushDrawRule : AbstractRule
 {
     public override int GetScore()
     {
-        if (this.diceIDList.Count < 4)
+        if (this.diceIDList.Count < 3)
         {
             return 0;
+        }
+        else if (this.diceIDList.Count == 3)
+        {
+            return 30;
         }
         else if (this.diceIDList.Count == 4)
         {
             return 40;
-        }
-        else if (this.diceIDList.Count == 5)
-        {
-            return 50;
         }
         else
         {
@@ -273,7 +278,7 @@ public class FlushDrawRule : AbstractRule
             }
         }
 
-        if (maxLen >= 4)
+        if (maxLen >= 3)
         {
             return diceStateArray[maxLenIdx];
         }

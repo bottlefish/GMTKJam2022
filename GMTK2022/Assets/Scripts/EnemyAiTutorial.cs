@@ -163,7 +163,7 @@ public class EnemyAiTutorial : MonoBehaviour
         if(other.transform.tag=="Player")
         {
             Destroy(this.gameObject);
-            other.transform.GetComponent<PlayerHealth>().UpdateHealth();
+            other.transform.GetComponent<PlayerHealth>().TakeDamage();
 
         }
     }

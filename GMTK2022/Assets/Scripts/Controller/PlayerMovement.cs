@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gamepadRoateSmoothing = -1000f;
     [SerializeField] private float DashSpeed = 1;
     [SerializeField] private float DashDuration = 0.2f;
+    [SerializeField] private float DashCD = 1;
 
     private CharacterController controller;
     private bool hasDashInput = false;
@@ -54,11 +55,14 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
         gameObject.layer = 6;
     }
-
+    public bool GetCanDash()
+    {
+        return Time.time - StartDashTime > DashCD;
+    }
     void HandleMovement()
     {
         Vector3 move = moveQuaternion * new Vector3(movement.x, 0, -movement.y);
-        if (!isDashing && hasDashInput)
+        if (!isDashing && hasDashInput && GetCanDash())
         {
             if (DashCoroutine != null) StopCoroutine(DashCoroutine);
             DashCoroutine = StartCoroutine(Dash());
