@@ -21,16 +21,37 @@ public class ScoreManager : Singleton<ScoreManager>
     public Transform slotInitPos;
 
     public AudioClip[] winSound;
-  
+
+    //TODO:不优雅
+    public void UpdateFlushDrawRule(int NewMaxValue)
+    {
+        var Rule = rulesChain;
+        if (Rule is FlushDrawRule)
+        {
+            (Rule as FlushDrawRule).NeededDice = NewMaxValue;
+            return;
+        }
+        Rule = Rule.GetNextRule();
+        if (Rule is FlushDrawRule)
+        {
+            (Rule as FlushDrawRule).NeededDice = NewMaxValue;
+            return;
+        }
+    }
+
+    public void ChangeScore(int Delta)
+    {
+        totalScore += Delta;
+    }
 
     /// <summary>
     /// 计分器清零
     /// </summary>
 
-    
+
     public void InitScoreManager()
     {
-        totalScore = 0;
+        totalScore = 15;
     }
 
     private static Vector3[] SlotPosition()
@@ -70,12 +91,12 @@ public class ScoreManager : Singleton<ScoreManager>
         // 规则类型
         string ruleType = checkResult.GetRuleType();
 
-        if(ruleType=="StraightDraw")
+        if (ruleType == "StraightDraw")
         {
             AudioManager.Instance.playwin(winSound[0]);
 
         }
-        if(ruleType=="FlushDraw")
+        if (ruleType == "FlushDraw")
         {
             AudioManager.Instance.playwin(winSound[1]);
 
@@ -90,12 +111,21 @@ public class ScoreManager : Singleton<ScoreManager>
         GunController gun = player.GetComponent<GunController>();
         for (int i = 0; i < checkResult.diceIDList.Count; i++)
         {
-            checkResult.diceIDList[i].TakeEffectAndMoveToShowSlot(ruleType,slotPosition[i]);
+            checkResult.diceIDList[i].TakeEffectAndMoveToShowSlot(ruleType, slotPosition[i]);
         }
         // 执行全局效果
         if (ruleType.CompareTo("StraightDraw") == 0)
         {
             FindObjectOfType<PlayerHealth>().RestoreLife(100);
+        }
+        else if (ruleType.CompareTo("BeastRule") == 0)
+        {
+            FindObjectOfType<PlayerHealth>().RestoreLife(100);
+            var Enemies = FindObjectsOfType<EnemyAiTutorial>();
+            foreach (var Enemy in Enemies)
+            {
+                Destroy(Enemy.gameObject);
+            }
         }
 
         // 责任链结果清空
@@ -122,6 +152,21 @@ public class ScoreManager : Singleton<ScoreManager>
 
         return straightDrawRule;
     }
+
+    // TODO 责任链中应该引入优先级int，按优先级执行，而不是这样“AddToFront”
+    public void AddRuleToChain(AbstractRule Rule, bool AddToFront)
+    {
+        if (AddToFront)
+        {
+            Rule.SetNextRule(rulesChain);
+            rulesChain = Rule;
+        }
+        else
+        {
+            rulesChain.SetNextRule(Rule);
+        }
+    }
+
 }
 
 /// <summary>
@@ -136,6 +181,11 @@ public abstract class AbstractRule
     public void SetNextRule(AbstractRule nextRule)
     {
         this.nextRule = nextRule;
+    }
+
+    public AbstractRule GetNextRule()
+    {
+        return nextRule;
     }
 
     /// <summary>
@@ -192,14 +242,7 @@ public class StraightDrawRule : AbstractRule
         {
             return 0;
         }
-        else if (this.diceIDList.Count == 5)
-        {
-            return 40;
-        }
-        else
-        {
-            return 50;
-        }
+        return diceIDList.Count * 10 - 10;
     }
 
     public override List<DiceController> CheckSelfRule(List<DiceController>[] diceStateArray)
@@ -245,24 +288,14 @@ public class StraightDrawRule : AbstractRule
 /// </summary>
 public class FlushDrawRule : AbstractRule
 {
+    public int NeededDice = 4;
     public override int GetScore()
     {
-        if (this.diceIDList.Count < 3)
+        if (this.diceIDList.Count < NeededDice)
         {
             return 0;
         }
-        else if (this.diceIDList.Count == 3)
-        {
-            return 30;
-        }
-        else if (this.diceIDList.Count == 4)
-        {
-            return 40;
-        }
-        else
-        {
-            return 60;
-        }
+        else return diceIDList.Count * 10;
     }
 
     public override List<DiceController> CheckSelfRule(List<DiceController>[] diceStateArray)
@@ -278,7 +311,7 @@ public class FlushDrawRule : AbstractRule
             }
         }
 
-        if (maxLen >= 3)
+        if (maxLen >= NeededDice)
         {
             return diceStateArray[maxLenIdx];
         }
@@ -345,5 +378,96 @@ public class DoublePairsRule : AbstractRule
         {
             return "DoublePairs";
         }
+    }
+}
+
+
+// 114514规则，野兽先辈
+public class BeastRule : AbstractRule
+{
+    public override List<DiceController> CheckSelfRule(List<DiceController>[] diceStateArray)
+    {
+        List<DiceController> res = new List<DiceController>();
+        // 114514 
+        if (diceStateArray[0].Count >= 3)
+        {
+            if (diceStateArray[3].Count >= 2)
+            {
+                if (diceStateArray[4].Count >= 1)
+                {
+                    for (int i = 0; i < 3; i++) res.Add(diceStateArray[0][i]);
+                    for (int i = 0; i < 2; i++) res.Add(diceStateArray[3][i]);
+                    for (int i = 0; i < 1; i++) res.Add(diceStateArray[4][i]);
+                    return res;
+                }
+            }
+        }
+        return res;
+    }
+
+    public override string GetRuleType()
+    {
+        if (this.diceIDList.Count == 0)
+        {
+            return "NoRule";
+        }
+        else
+        {
+            return "BeastRule";
+        }
+    }
+
+    public override int GetScore()
+    {
+        return diceIDList.Count > 0 ? 100 : 0;
+    }
+}
+
+
+// 残缺规则，要求场上恰好有5个骰子，其中有1和6，且每个各不相同
+// 即恰好为 123456 中抽走中间一个。
+public class DrawbackRule : AbstractRule
+{
+    public override List<DiceController> CheckSelfRule(List<DiceController>[] diceStateArray)
+    {
+        bool Success = false;
+        int Sum = 0;
+        List<DiceController> res = new List<DiceController>();
+        for (int i = 0; i < 6; i++)
+        {
+            var diceState = diceStateArray[i];
+            Sum += diceState.Count;
+            if (diceState.Count >= 2)
+            {
+                Success = false;
+                break;
+            }
+            if ((i == 0 || i == 5) && diceState.Count == 0)
+            {
+                Success = false;
+                break;
+            }
+            res.AddRange(diceState);
+        }
+        if (Sum != 5) Success = false;
+
+        return Success ? res : new List<DiceController>();
+    }
+
+    public override string GetRuleType()
+    {
+        if (this.diceIDList.Count == 0)
+        {
+            return "NoRule";
+        }
+        else
+        {
+            return "DrawbackRule";
+        }
+    }
+
+    public override int GetScore()
+    {
+        return diceIDList.Count > 0 ? 50 : 0;
     }
 }

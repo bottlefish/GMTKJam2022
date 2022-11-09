@@ -21,11 +21,9 @@ public class EnemyAiTutorial : MonoBehaviour
     bool alreadyAttacked;
     public GameObject projectile;
 
-    private float timeUpdatePlayerPos=0.02f;
+    private float timeUpdatePlayerPos = 0.02f;
 
     private Vector3 target;
-
-    
 
     public enum AItype
     {
@@ -36,11 +34,11 @@ public class EnemyAiTutorial : MonoBehaviour
     public AItype aiType;
 
 
-   
+    public static int NumOfLiveEnemies = 0;
 
 
     //States
-    private float attackRange=1f;
+    private float attackRange = 1f;
     //public bool playerInSightRange, playerInAttackRange;
 
     private void Awake()
@@ -48,14 +46,22 @@ public class EnemyAiTutorial : MonoBehaviour
         player = GameObject.Find("PlayerObj").transform;
         agent = GetComponent<NavMeshAgent>();
     }
-    private void Start() {
-        float distance= Vector3.Distance(transform.position,player.transform.position);
-        float time=distance/agent.speed;
-        target=player.GetComponent<Rigidbody>().velocity*player.GetComponent<PlayerMovement>().PlayerSpeed;
+    private void Start()
+    {
+        NumOfLiveEnemies++;
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        float time = distance / agent.speed;
+        target = player.GetComponent<Rigidbody>().velocity * player.GetComponent<PlayerMovement>().PlayerSpeed;
+    }
+
+    private void OnDestroy()
+    {
+        NumOfLiveEnemies--;
     }
 
     private void Update()
-    {   if(!isInAttackRange())
+    {
+        if (!isInAttackRange())
         {
             ChasePlayer();
         }
@@ -64,7 +70,7 @@ public class EnemyAiTutorial : MonoBehaviour
             AttackPlayer();
 
         }
- 
+
         //if (!playerInAttackRange) ChasePlayer();
         ChasePlayer();
         //if (playerInAttackRange) AttackPlayer();
@@ -72,8 +78,8 @@ public class EnemyAiTutorial : MonoBehaviour
 
     bool isInAttackRange()
     {
-        float distance= Vector3.Distance(transform.position,player.transform.position);
-        if(distance<=attackRange && !player.GetComponent<PlayerMovement>().isDashing)
+        float distance = Vector3.Distance(transform.position, player.transform.position);
+        if (distance <= attackRange && !player.GetComponent<PlayerMovement>().isDashing)
         {
             return true;
         }
@@ -82,42 +88,42 @@ public class EnemyAiTutorial : MonoBehaviour
             return false;
         }
 
-        
+
     }
     private void ChasePlayer()
     {
-        if(aiType==AItype.follow)
+        if (aiType == AItype.follow)
         {
             agent.SetDestination(player.position);
         }
-        if(aiType==AItype.predict)
+        if (aiType == AItype.predict)
         {
-            timeUpdatePlayerPos-=Time.deltaTime;
-            if(timeUpdatePlayerPos<=0)
+            timeUpdatePlayerPos -= Time.deltaTime;
+            if (timeUpdatePlayerPos <= 0)
             {
-            
-            timeUpdatePlayerPos=1;
 
-            Debug.Log(target+""+transform.position+""+player.transform.position);
+                timeUpdatePlayerPos = 1;
 
-            } 
-            float distance= Vector3.Distance(transform.position,player.transform.position);
-            float time=distance/agent.speed;
-            target= new Vector3( player.GetComponent<PlayerMovement>().movement.x,0, player.GetComponent<PlayerMovement>().movement.y)*5f +player.transform.position;          
-            agent.SetDestination(new Vector3(target.x,transform.position.y,target.z));
+                Debug.Log(target + "" + transform.position + "" + player.transform.position);
+
+            }
+            float distance = Vector3.Distance(transform.position, player.transform.position);
+            float time = distance / agent.speed;
+            target = new Vector3(player.GetComponent<PlayerMovement>().movement.x, 0, player.GetComponent<PlayerMovement>().movement.y) * 5f + player.transform.position;
+            agent.SetDestination(new Vector3(target.x, transform.position.y, target.z));
         }
-        
+
     }
 
     private void AttackPlayer()
     {
-        transform.DOMove(player.transform.position,0.3f);
+        transform.DOMove(player.transform.position, 0.3f);
         transform.DOLocalMoveY(3, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
-                    {                       
-                        transform.DOMove(player.transform.position,0.1f);
-                        
+                    {
+                        transform.DOMove(player.transform.position, 0.1f);
+
                     });
-                 
+
         //Make sure enemy doesn't move
         /*agent.SetDestination(transform.position);
 
@@ -156,11 +162,12 @@ public class EnemyAiTutorial : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.yellow;
-       // Gizmos.DrawWireSphere(transform.position, sightRange);
+        // Gizmos.DrawWireSphere(transform.position, sightRange);
     }
 
-    private void OnCollisionEnter(Collision other) {
-        if(other.transform.tag=="Player")
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.transform.tag == "Player")
         {
             Destroy(this.gameObject);
             other.transform.GetComponent<PlayerHealth>().TakeDamage();

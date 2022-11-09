@@ -9201,7 +9201,7 @@
     "m_DefaultRefNameVersion": 0,
     "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_a2697f6422104fac8dbfa6b556508922",
-    "m_OverrideReferenceName": "",
+    "m_OverrideReferenceName": "LitColor",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",

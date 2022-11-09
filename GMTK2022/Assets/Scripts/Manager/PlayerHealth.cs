@@ -16,26 +16,48 @@ public class PlayerHealth : MonoBehaviour
     public Image[] healthUI1;
     public AudioClip[] behited;
 
+    public delegate int OnPreDamageDelegate(int f);
+    public List<OnPreDamageDelegate> OnPreDamageDelList;
+
 
     void Start()
     {
+        OnPreDamageDelList = new List<OnPreDamageDelegate>();
         health = healthMax;
         damagedEffect.enabled = false;
+        UpdateHealthUI();
+    }
+
+    public void ChangeMaxHealth(int Delta)
+    {
+        healthMax += Delta;
+        UpdateHealthUI();
     }
 
     public void RestoreLife(int Delta)
     {
         health = Mathf.Clamp(health + Delta, health, healthMax);
+        restoredEffect.enabled = true;
+        restoredEffect.color = new Color(restoredEffect.color.r, restoredEffect.color.g, restoredEffect.color.b, 0);
         restoredEffect.DOFade(0.65f, 0.5f).SetEase(Ease.Flash).SetLoops(2, LoopType.Yoyo).OnComplete(() => { restoredEffect.enabled = false; });
         // TODO 回血屏幕特效？
         UpdateHealthUI();
     }
 
-    public void TakeDamage()
+    public void TakeDamage(int Damage = 1)
     {
         //@Snoww：冲刺中不受伤害
         if (GetComponent<PlayerMovement>().isDashing) return;
-        health -= 1;
+
+        // OnPreDamage
+        foreach (var Del in OnPreDamageDelList)
+        {
+            Damage = Del(Damage);
+        }
+        //TODO：表现层，出一个Miss？
+        if (Damage == 0) return;
+
+        health -= Damage;
         AudioManager.Instance.playsound(behited[0]);
         AudioManager.Instance.playsound2(behited[1]);
         damagedEffect.enabled = true;
@@ -56,12 +78,19 @@ public class PlayerHealth : MonoBehaviour
         {
             if (i < health)
             {
+                healthUI1[i].color = Color.white;
+            }
+            else
+            {
+                healthUI1[i].color = new Color(0.3f, 0.3f, 0.3f, 1);
+            }
+            if (i < healthMax)
+            {
                 healthUI1[i].enabled = true;
             }
             else
             {
                 healthUI1[i].enabled = false;
-
             }
         }
     }

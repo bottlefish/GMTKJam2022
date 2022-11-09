@@ -29,12 +29,40 @@ public class GunController : MonoBehaviour
 
     public TMP_Text text;
 
+    public delegate void OnMouseRightButtonDelegate();
+    public OnMouseRightButtonDelegate OnMouseRightClickDel;
+
+    public delegate void OnDiceShooted(DiceController diceController);
+    public List<OnDiceShooted> onDiceShootDelList;
 
     // Start is called before the first frame update
+    private void Awake()
+    {
+        onDiceShootDelList = new List<OnDiceShooted>();
+    }
+
     void Start()
     {
         InitDiceQueue();
         text.text = diceQueue.Count.ToString();
+    }
+
+    public void ChangeDiceNum(int Delta)
+    {
+        diceBoxSize += Delta;
+        if (Delta > 0)
+        {
+            for (int i = 0; i < Delta; i++)
+                diceQueue.Enqueue(Random.Range(1, 7));
+        }
+        else if (Delta < 0)
+        {
+            for (int i = 0; i < Delta; i++)
+            {
+                if (diceQueue.Count <= 0) break;
+                diceQueue.Dequeue();
+            }
+        }
     }
 
     // 初始化骰子队列，随机
@@ -47,36 +75,59 @@ public class GunController : MonoBehaviour
         }
     }
 
+    //TODO：仅用于表现，实际射击时未调用这个检查
     public bool CanShoot()
     {
-        return diceQueue.Count > 0 && Time.time - LastShootTime > ShootCD;
+        return diceQueue.Count > 0
+                && Time.time - LastShootTime > ShootCD
+                && !TraitManager.Instance.IsShopping;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && Time.time - LastShootTime > ShootCD)
+        if (Input.GetMouseButtonDown(0))
+        {
+            TryShootDice();
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            OnMouseRightClickDel.Invoke();
+        }
+        text.text = diceQueue.Count.ToString();
+
+    }
+
+    public bool TryShootDice(int overrideState = -1)
+    {
+        if (Time.time - LastShootTime > ShootCD && !TraitManager.Instance.IsShopping)
         {
             if (diceQueue.Count == 0)
             {
                 AudioManager.Instance.playsound(noAmmoSound);
                 // 手上没有骰子了
                 Debug.Log("手上没有骰子！");
-                return;
+                return false;
             }
             else
             {
                 // 手上有骰子，发射并从骰子弹匣出栈
+                // 但如果传入了override state，则使用 override state；
                 LastShootTime = Time.time;
-                ShootDice(diceQueue.Dequeue());
-                //添加没有骰子的反馈
+                int ShootState = diceQueue.Dequeue();
+                var Dice = ShootDice(ShootState);
+                if (overrideState > 0)
+                    Dice.FinalState = overrideState;
+                foreach (var Del in onDiceShootDelList)
+                    Del.Invoke(Dice);
+                return true;
             }
-            text.text = diceQueue.Count.ToString();
         }
-        text.text = diceQueue.Count.ToString();
+
+        return false;
     }
 
-    private void ShootDice(int diceState)
+    private DiceController ShootDice(int diceState)
     {
         CameraShake.Shake(0.1f, 0.4f);
         Instantiate(gundust, firePoint.position, Quaternion.identity);
@@ -88,6 +139,7 @@ public class GunController : MonoBehaviour
         newDice.InitDiceState(diceState);
         newDice.GetComponent<Rigidbody>().AddForce(transform.forward * ForceAmount, ForceMode.Impulse);
         newDice.GetComponent<Rigidbody>().freezeRotation = true;
+        return newDice;
     }
 
     private void OnTriggerEnter(Collider other)

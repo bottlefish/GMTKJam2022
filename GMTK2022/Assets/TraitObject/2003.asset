@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22baae67f561a9345b9d44d1fee012f2, type: 3}
+  m_Name: 2003
+  m_EditorClassIdentifier: 
+  UniqueID: 2003
+  Name: "\u731B\u517D\u8F88\u5148"
+  Description: "\u82E5\u573A\u4E0A\u540C\u65F6\u5B58\u5728 3\u4E2A1\uFF0C2\u4E2A4\uFF0C1\u4E2A5\uFF0C\u573A\u4E0A\u4F1A\u7206\u53D1\u51FA\u91CE\u517D\u822C\u7684\u53EB\u58F0\uFF0C\u6740\u6B7B\u6240\u6709\u654C\u4EBA\uFF0C\u540C\u65F6\u4E3B\u89D2\u6062\u590D\u5168\u90E8\u751F\u547D\u503C\uFF0C\u5E76\u83B7\u5F97\u5927\u91CF\u91D1\u94B1\u3002"
+  Price: 50
+  UITexture: {fileID: 0}
+  PrerequisitesID: 
+  PrerequisitesNotID: 
+  MaxNum: 1
+  Probability: 0.2
+  ActivateEffects:
+  - ActivateEffectScript:
+      GuidAssignmentFailed: 0
+      GUID: 
+      _typeNameAndAssembly: AddBeastRule, Assembly-CSharp
+      _suppressLogs: 0
+    EffectStr: 

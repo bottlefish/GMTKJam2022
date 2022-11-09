@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22baae67f561a9345b9d44d1fee012f2, type: 3}
+  m_Name: 2001
+  m_EditorClassIdentifier: 
+  UniqueID: 2001
+  Name: "\u7075\u6D3B\u5C31\u4E1A\uFF08\u672A\u5B9E\u73B0\uFF09"
+  Description: "\u7075\u6D3B\u5C31\u4E1A\uFF0C\u65F6\u95F4\u81EA\u7531\uFF0C\u6536\u5165\u589E\u52A0\uFF0C\u5C82\u4E0D\u7F8E\u54C9\uFF01\u6BCF\u516D\u6B21\u5C04\u51FB\u4F1A\u6295\u51FA\u4E00\u4E2A\u4E07\u80FD\u9AB0\uFF0C\u5176\u53EF\u88AB\u89C6\u4F5C\u4EFB\u610F\u9762\u671D\u4E0A\u6765\u89E6\u53D1\u6548\u679C\u3002"
+  Price: 75
+  UITexture: {fileID: 0}
+  PrerequisitesID: 
+  PrerequisitesNotID: 
+  MaxNum: 1
+  Probability: 0.2
+  ActivateEffects: []

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22baae67f561a9345b9d44d1fee012f2, type: 3}
+  m_Name: 1019
+  m_EditorClassIdentifier: 
+  UniqueID: 1019
+  Name: "\u62B1\u9E21\u517B\u7AF9"
+  Description: "\u62B1\u9E21\u517B\u7AF9\uFF0C\u5750\u5730\u76D8\u5265\u3002\u6BCF\u6CE2\u654C\u4EBA\u989D\u5916\u8D5A\u53D6\u4E94\u91D1\u5E01\u3002"
+  Price: 20
+  UITexture: {fileID: 0}
+  PrerequisitesID: 
+  PrerequisitesNotID: 
+  MaxNum: 2
+  Probability: 1.25
+  ActivateEffects:
+  - ActivateEffectScript:
+      GuidAssignmentFailed: 0
+      GUID: 
+      _typeNameAndAssembly: ChangeMoneyToAdd, Assembly-CSharp
+      _suppressLogs: 0
+    EffectStr: 5

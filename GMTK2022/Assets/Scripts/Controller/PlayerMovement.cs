@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float gamepadRoateSmoothing = -1000f;
     [SerializeField] private float DashSpeed = 1;
     [SerializeField] private float DashDuration = 0.2f;
-    [SerializeField] private float DashCD = 1;
+    [SerializeField] public float DashCD = 1;
 
     private CharacterController controller;
     private bool hasDashInput = false;
@@ -41,11 +41,13 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 DashDir;
     float StartDashTime;
-    IEnumerator Dash()
+    IEnumerator Dash(Vector3? OutDir = null)
     {
         //@Snoww:开始冲刺
         StartDashTime = Time.time;
         DashDir = movement.magnitude > 0.5f ? moveQuaternion * new Vector3(movement.x, 0, -movement.y) : transform.forward;
+        if (OutDir.HasValue) 
+            DashDir = OutDir.Value;
         DashDir.Scale(new Vector3(1, 0, 1));
         DashDir.Normalize();
         gameObject.layer = 9;
@@ -59,14 +61,31 @@ public class PlayerMovement : MonoBehaviour
     {
         return Time.time - StartDashTime > DashCD;
     }
-    void HandleMovement()
+    public bool TryDash(Vector3? OutDir = null)
     {
-        Vector3 move = moveQuaternion * new Vector3(movement.x, 0, -movement.y);
-        if (!isDashing && hasDashInput && GetCanDash())
+        if (!isDashing && GetCanDash())
         {
             if (DashCoroutine != null) StopCoroutine(DashCoroutine);
             DashCoroutine = StartCoroutine(Dash());
+            return true;
         }
+        return false;
+    }
+    public bool TryMoveTo(Vector3 Pos)
+    {
+        if (!isDashing && GetCanDash())
+        {
+            controller.enabled = false;
+            transform.position = Pos;
+            controller.enabled = true;
+        }
+        return false;
+    }
+    void HandleMovement()
+    {
+        Vector3 move = moveQuaternion * new Vector3(movement.x, 0, -movement.y);
+        if (hasDashInput)
+            TryDash();
 
         if (!isDashing)
             controller.Move(move * Time.deltaTime * PlayerSpeed);
